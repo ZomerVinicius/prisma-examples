@@ -1,8 +1,8 @@
-import Layout from '../components/Layout'
-import Link from 'next/link'
-import { withApollo } from '../apollo/client'
-import gql from 'graphql-tag'
-import { useQuery } from '@apollo/react-hooks'
+import { useQuery } from "@apollo/react-hooks"
+import gql from "graphql-tag"
+import Link from "next/link"
+import { withApollo } from "../apollo/client"
+import Layout from "../components/Layout"
 
 const FeedQuery = gql`
   query FeedQuery {
@@ -19,26 +19,32 @@ const FeedQuery = gql`
   }
 `
 
-const Post = ({ post }) => (
-  <Link href="/p/[id]" as={`/p/${post.id}`}>
-    <a>
-      <h2>{post.title}</h2>
-      <small>By {post.author.name}</small>
-      <p>{post.content}</p>
-      <style jsx>{`
-        a {
-          text-decoration: none;
-          color: inherit;
-          padding: 2rem;
-          display: block;
-        }
-      `}</style>
-    </a>
-  </Link>
-)
+const Post = ({ post }) => {
+  const authorName = post.author ? post.author.name : "Unknown author"
+
+  return (
+    <Link href="/p/[id]" as={`/p/${post.id}`}>
+      <a>
+        <h2>{post.title}</h2>
+        <small>By {authorName}</small>
+        <p>{post.content}</p>
+        <style jsx>{`
+          a {
+            text-decoration: none;
+            color: inherit;
+            padding: 2rem;
+            display: block;
+          }
+        `}</style>
+      </a>
+    </Link>
+  )
+}
 
 const Blog = () => {
   const { loading, error, data } = useQuery(FeedQuery)
+
+  console.log(data)
 
   if (loading) {
     return <div>Loading ...</div>
@@ -52,7 +58,7 @@ const Blog = () => {
       <div className="page">
         <h1>My Blog</h1>
         <main>
-          {data.feed.map(post => (
+          {data.feed.map((post) => (
             <div className="post">
               <Post key={post.id} post={post} />
             </div>
