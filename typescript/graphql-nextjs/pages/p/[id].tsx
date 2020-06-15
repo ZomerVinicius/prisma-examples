@@ -3,6 +3,8 @@ import gql from "graphql-tag"
 import Router, { useRouter } from "next/router"
 import { withApollo } from "../../apollo/client"
 import Layout from "../../components/Layout"
+import { DraftsQuery } from "../drafts"
+import { FeedQuery } from "../index"
 
 const PostQuery = gql`
   query PostQuery($postId: String!) {
@@ -88,6 +90,14 @@ function Post() {
                 variables: {
                   postId,
                 },
+                refetchQueries: [
+                  {
+                    query: DraftsQuery,
+                  },
+                  {
+                    query: FeedQuery,
+                  },
+                ],
               })
               Router.push("/")
             }}
@@ -101,6 +111,14 @@ function Post() {
               variables: {
                 postId,
               },
+              refetchQueries: [
+                {
+                  query: DraftsQuery,
+                },
+                {
+                  query: FeedQuery,
+                },
+              ],
             })
             Router.push("/")
           }}

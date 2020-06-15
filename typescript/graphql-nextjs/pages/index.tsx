@@ -4,7 +4,7 @@ import Link from "next/link"
 import { withApollo } from "../apollo/client"
 import Layout from "../components/Layout"
 
-const FeedQuery = gql`
+export const FeedQuery = gql`
   query FeedQuery {
     feed {
       id
