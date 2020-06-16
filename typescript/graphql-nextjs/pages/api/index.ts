@@ -72,6 +72,13 @@ const Query = objectType({
       },
     })
 
+    t.list.field("authors", {
+      type: "User",
+      resolve: (_parent, _args, ctx) => {
+        return prisma.user.findMany({})
+      },
+    })
+
     t.list.field("drafts", {
       type: "Post",
       resolve: (_parent, _args, ctx) => {

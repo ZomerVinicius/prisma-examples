@@ -1,4 +1,4 @@
-import { useMutation } from "@apollo/react-hooks"
+import { useMutation, useQuery } from "@apollo/react-hooks"
 import gql from "graphql-tag"
 import Router from "next/router"
 import React, { useState } from "react"
@@ -25,14 +25,31 @@ const CreateDraftMutation = gql`
   }
 `
 
+export const AuthorsQuery = gql`
+  query authorsQuery {
+    authors {
+      id
+      name
+      email
+    }
+  }
+`
+
 function Draft(props) {
+  const { loading, error, data } = useQuery(AuthorsQuery)
+  const [createDraft] = useMutation(CreateDraftMutation)
   const [title, setTitle] = useState("")
   const [content, setContent] = useState("")
-  const [authorEmail, setAuthorEmail] = useState("")
-
-  const [createDraft, { loading, error, data }] = useMutation(
-    CreateDraftMutation
+  const [authorEmail, setAuthorEmail] = useState(
+    data?.authors.length > 0 ? data.authors[0].email : ""
   )
+
+  if (loading) {
+    return <div>Loading ...</div>
+  }
+  if (error) {
+    return <div>Error: {error.message}</div>
+  }
 
   return (
     <Layout>
@@ -64,12 +81,14 @@ function Draft(props) {
             type="text"
             value={title}
           />
-          <input
+          <select
             onChange={(e) => setAuthorEmail(e.target.value)}
-            placeholder="Author (email adress)"
-            type="text"
             value={authorEmail}
-          />
+          >
+            {data?.authors.map((author) => (
+              <option value={author.email}>{author.name}</option>
+            ))}
+          </select>
           <textarea
             cols={50}
             onChange={(e) => setContent(e.target.value)}
