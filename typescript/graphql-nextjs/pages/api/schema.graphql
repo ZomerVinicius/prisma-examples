@@ -14,6 +14,7 @@ type Mutation {
   deletePost(postId: String): Post
   publish(postId: String): Post
   signupUser(email: String!, name: String): User!
+  upsertProfile(bio: String!, id: Int!): Profile!
 }
 
 type Post {
@@ -24,12 +25,19 @@ type Post {
   title: String!
 }
 
+type Profile {
+  bio: String!
+  id: Int!
+  user: User!
+}
+
 type Query {
   authors: [User!]!
   drafts: [Post!]!
   feed: [Post!]!
   filterPosts(searchString: String): [Post!]!
   post(postId: String!): Post!
+  profileByUserId(userId: String!): Profile!
 }
 
 type User {
@@ -37,4 +45,5 @@ type User {
   id: Int!
   name: String!
   posts: [Post!]!
+  profiles: Profile!
 }

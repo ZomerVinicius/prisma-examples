@@ -1,4 +1,10 @@
-import { asNexusMethod, makeSchema, objectType, stringArg } from "@nexus/schema"
+import {
+  asNexusMethod,
+  intArg,
+  makeSchema,
+  objectType,
+  stringArg,
+} from "@nexus/schema"
 import { PrismaClient } from "@prisma/client"
 import { graphql } from "graphql"
 import { GraphQLDate } from "graphql-iso-date"
@@ -14,6 +20,15 @@ const User = objectType({
     t.int("id")
     t.string("name")
     t.string("email")
+    t.field("profiles", {
+      type: "Profile",
+      resolve: (parent) =>
+        prisma.user
+          .findOne({
+            where: { id: Number(parent.id) },
+          })
+          .Profile(),
+    })
     t.list.field("posts", {
       type: "Post",
       resolve: (parent) =>
@@ -48,6 +63,24 @@ const Post = objectType({
   },
 })
 
+const Profile = objectType({
+  name: "Profile",
+  definition(t) {
+    t.int("id")
+    t.string("bio")
+    t.field("user", {
+      type: "User",
+      nullable: false,
+      resolve: (parent) =>
+        prisma.profile
+          .findOne({
+            where: { id: Number(parent.id) },
+          })
+          .User(),
+    })
+  },
+})
+
 const Query = objectType({
   name: "Query",
   definition(t) {
@@ -59,6 +92,17 @@ const Query = objectType({
       resolve: (_, args) => {
         return prisma.post.findOne({
           where: { id: Number(args.postId) },
+        })
+      },
+    })
+    t.field("profileByUserId", {
+      type: "Profile",
+      args: {
+        userId: stringArg({ nullable: false }),
+      },
+      resolve: (_, args) => {
+        return prisma.profile.findOne({
+          where: { user: Number(args.userId) },
         })
       },
     })
@@ -126,6 +170,27 @@ const Mutation = objectType({
       },
     })
 
+    t.field("upsertProfile", {
+      type: "Profile",
+      args: {
+        id: intArg({ nullable: false }),
+        bio: stringArg({ nullable: false }),
+      },
+      resolve: (_, { id, bio }, ctx) => {
+        return prisma.profile.upsert({
+          where: { user: id },
+          create: {
+            User: { connect: { id } },
+            bio,
+          },
+          update: {
+            User: { connect: { id } },
+            bio,
+          },
+        })
+      },
+    })
+
     t.field("deletePost", {
       type: "Post",
       nullable: true,
@@ -177,7 +242,7 @@ const Mutation = objectType({
 })
 
 export const schema = makeSchema({
-  types: [Query, Mutation, Post, User, GQLDate],
+  types: [Query, Mutation, Post, User, Profile, GQLDate],
   outputs: {
     typegen: path.join(process.cwd(), "pages", "api", "nexus-typegen.ts"),
     schema: path.join(process.cwd(), "pages", "api", "schema.graphql"),

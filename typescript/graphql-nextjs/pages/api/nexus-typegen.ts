@@ -35,6 +35,10 @@ export interface NexusGenRootTypes {
     published: boolean; // Boolean!
     title: string; // String!
   }
+  Profile: { // root type
+    bio: string; // String!
+    id: number; // Int!
+  }
   Query: {};
   User: { // root type
     email: string; // String!
@@ -58,6 +62,7 @@ export interface NexusGenFieldTypes {
     deletePost: NexusGenRootTypes['Post'] | null; // Post
     publish: NexusGenRootTypes['Post'] | null; // Post
     signupUser: NexusGenRootTypes['User']; // User!
+    upsertProfile: NexusGenRootTypes['Profile']; // Profile!
   }
   Post: { // field return type
     author: NexusGenRootTypes['User'] | null; // User
@@ -66,18 +71,25 @@ export interface NexusGenFieldTypes {
     published: boolean; // Boolean!
     title: string; // String!
   }
+  Profile: { // field return type
+    bio: string; // String!
+    id: number; // Int!
+    user: NexusGenRootTypes['User']; // User!
+  }
   Query: { // field return type
     authors: NexusGenRootTypes['User'][]; // [User!]!
     drafts: NexusGenRootTypes['Post'][]; // [Post!]!
     feed: NexusGenRootTypes['Post'][]; // [Post!]!
     filterPosts: NexusGenRootTypes['Post'][]; // [Post!]!
     post: NexusGenRootTypes['Post']; // Post!
+    profileByUserId: NexusGenRootTypes['Profile']; // Profile!
   }
   User: { // field return type
     email: string; // String!
     id: number; // Int!
     name: string; // String!
     posts: NexusGenRootTypes['Post'][]; // [Post!]!
+    profiles: NexusGenRootTypes['Profile']; // Profile!
   }
 }
 
@@ -98,6 +110,10 @@ export interface NexusGenArgTypes {
       email: string; // String!
       name?: string | null; // String
     }
+    upsertProfile: { // args
+      bio: string; // String!
+      id: number; // Int!
+    }
   }
   Query: {
     filterPosts: { // args
@@ -105,6 +121,9 @@ export interface NexusGenArgTypes {
     }
     post: { // args
       postId: string; // String!
+    }
+    profileByUserId: { // args
+      userId: string; // String!
     }
   }
 }
@@ -114,7 +133,7 @@ export interface NexusGenAbstractResolveReturnTypes {
 
 export interface NexusGenInheritedFields {}
 
-export type NexusGenObjectNames = "Mutation" | "Post" | "Query" | "User";
+export type NexusGenObjectNames = "Mutation" | "Post" | "Profile" | "Query" | "User";
 
 export type NexusGenInputNames = never;
 

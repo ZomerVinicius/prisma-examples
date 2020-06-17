@@ -1,8 +1,8 @@
-import Link from 'next/link'
+import Link from "next/link"
 
 function isActive(pathname) {
   return (
-    typeof document !== 'undefined' && document.location.pathname === pathname
+    typeof document !== "undefined" && document.location.pathname === pathname
   )
 }
 
@@ -10,20 +10,23 @@ const Header = () => (
   <nav>
     <div className="left">
       <Link href="/">
-        <a className="bold" data-active={isActive('/')}>
+        <a className="bold" data-active={isActive("/")}>
           Blog
         </a>
       </Link>
       <Link href="/drafts">
-        <a data-active={isActive('/drafts')}>Drafts</a>
+        <a data-active={isActive("/drafts")}>Drafts</a>
       </Link>
     </div>
     <div className="right">
       <Link href="/signup">
-        <a data-active={isActive('/signup')}>Signup</a>
+        <a data-active={isActive("/signup")}>Signup</a>
       </Link>
       <Link href="/create">
-        <a data-active={isActive('/create')}>+ Create draft</a>
+        <a data-active={isActive("/create")}>+ Create draft</a>
+      </Link>
+      <Link href="/profile">
+        <a data-active={isActive("/profile")}>Profile</a>
       </Link>
     </div>
     <style jsx>{`
@@ -43,7 +46,7 @@ const Header = () => (
         display: inline-block;
       }
 
-      .left a[data-active='true'] {
+      .left a[data-active="true"] {
         color: gray;
       }
 
