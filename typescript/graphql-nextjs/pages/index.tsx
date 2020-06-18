@@ -63,8 +63,6 @@ const Blog = () => {
     if (error) {
         return <div>Error: {error.message}</div>
     }
-    console.log('test')
-    console.log()
 
     return (
         <Layout>
