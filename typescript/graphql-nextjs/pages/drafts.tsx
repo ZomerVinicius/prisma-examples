@@ -1,80 +1,87 @@
-import { useQuery } from "@apollo/react-hooks"
-import gql from "graphql-tag"
-import Link from "next/link"
-import { withApollo } from "../apollo/client"
-import Layout from "../components/Layout"
+import { useQuery } from '@apollo/react-hooks'
+import gql from 'graphql-tag'
+import Link from 'next/link'
+import { withApollo } from '../apollo/client'
+import Layout from '../components/Layout'
+import { IPost } from './index'
 
 export const DraftsQuery = gql`
-  query DraftsQuery {
-    drafts {
-      id
-      title
-      content
-      published
-      author {
-        id
-        name
-      }
+    query DraftsQuery {
+        drafts {
+            id
+            title
+            content
+            published
+            author {
+                id
+                name
+            }
+        }
     }
-  }
 `
 
-const Post = ({ post }) => (
-  <Link href="/p/[id]" as={`/p/${post.id}`}>
-    <a>
-      <h2>{post.title}</h2>
-      <small>By {post.author ? post.author.name : "Unknown Author"}</small>
-      <p>{post.content}</p>
-      <style jsx>{`
-        a {
-          text-decoration: none;
-          color: inherit;
-          padding: 2rem;
-          display: block;
-        }
-      `}</style>
-    </a>
-  </Link>
+interface Props {
+    post: IPost
+}
+
+const Post: React.FC<Props> = ({ post }) => (
+    <Link href="/p/[id]" as={`/p/${post.id}`}>
+        <a>
+            <h2>{post.title}</h2>
+            <small>
+                By {post.author ? post.author.name : 'Unknown Author'}
+            </small>
+            <p>{post.content}</p>
+            <style jsx>{`
+                a {
+                    text-decoration: none;
+                    color: inherit;
+                    padding: 2rem;
+                    display: block;
+                }
+            `}</style>
+        </a>
+    </Link>
 )
 
 const Drafts = () => {
-  const { loading, error, data } = useQuery(DraftsQuery)
+    const { loading, error, data } = useQuery(DraftsQuery)
 
-  if (loading) {
-    return <div>Loading ...</div>
-  }
-  if (error) {
-    return <div>Error: {error.message}</div>
-  }
+    if (loading) {
+        return <div>Loading ...</div>
+    }
+    if (error) {
+        return <div>Error: {error.message}</div>
+    }
 
-  return (
-    <Layout>
-      <div className="page">
-        <h1>Drafts</h1>
-        <main>
-          {data.drafts.map((post) => (
-            <div className="post">
-              <Post key={post.id} post={post} />
+    return (
+        <Layout>
+            <div className="page">
+                <h1>Drafts</h1>
+                <main>
+                    {data.drafts.map((post: IPost) => (
+                        <div className="post" key={post.id}>
+                            <Post key={post.id} post={post} />
+                        </div>
+                    ))}
+                </main>
             </div>
-          ))}
-        </main>
-      </div>
-      <style jsx>{`
-        .post {
-          background: white;
-          transition: box-shadow 0.1s ease-in;
-        }
+            <style jsx>{`
+                .post {
+                    background: white;
+                    transition: box-shadow 0.1s ease-in;
+                }
 
-        .post:hover {
-          box-shadow: 1px 1px 3px #aaa;
-        }
+                .post:hover {
+                    box-shadow: 1px 1px 3px #aaa;
+                }
 
-        .post + .post {
-          margin-top: 2rem;
-        }
-      `}</style>
-    </Layout>
-  )
+                .post + .post {
+                    margin-top: 2rem;
+                }
+            `}</style>
+        </Layout>
+    )
 }
 
 export default withApollo(Drafts)

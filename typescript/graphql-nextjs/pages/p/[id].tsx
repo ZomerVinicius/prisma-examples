@@ -1,154 +1,152 @@
-import { useMutation, useQuery } from "@apollo/react-hooks"
-import gql from "graphql-tag"
-import Router, { useRouter } from "next/router"
-import { withApollo } from "../../apollo/client"
-import Layout from "../../components/Layout"
-import { DraftsQuery } from "../drafts"
-import { FeedQuery } from "../index"
+import { useMutation, useQuery } from '@apollo/react-hooks'
+import gql from 'graphql-tag'
+import Router, { useRouter } from 'next/router'
+import { withApollo } from '../../apollo/client'
+import Layout from '../../components/Layout'
+import { DraftsQuery } from '../drafts'
+import { FeedQuery } from '../index'
 
 const PostQuery = gql`
-  query PostQuery($postId: String!) {
-    post(postId: $postId) {
-      id
-      title
-      content
-      published
-      author {
-        id
-        name
-      }
+    query PostQuery($postId: String!) {
+        post(postId: $postId) {
+            id
+            title
+            content
+            published
+            author {
+                id
+                name
+            }
+        }
     }
-  }
 `
 
 const PublishMutation = gql`
-  mutation PublishMutation($postId: String!) {
-    publish(postId: $postId) {
-      id
-      title
-      content
-      published
-      author {
-        id
-        name
-      }
+    mutation PublishMutation($postId: String!) {
+        publish(postId: $postId) {
+            id
+            title
+            content
+            published
+            author {
+                id
+                name
+            }
+        }
     }
-  }
 `
 
 const DeleteMutation = gql`
-  mutation DeleteMutation($postId: String!) {
-    deletePost(postId: $postId) {
-      id
-      title
-      content
-      published
-      author {
-        id
-        name
-      }
+    mutation DeleteMutation($postId: String!) {
+        deletePost(postId: $postId) {
+            id
+            title
+            content
+            published
+            author {
+                id
+                name
+            }
+        }
     }
-  }
 `
 
 function Post() {
-  const postId = useRouter().query.id
-  const { loading, error, data } = useQuery(PostQuery, {
-    variables: { postId },
-  })
+    const postId = useRouter().query.id
+    const { loading, error, data } = useQuery(PostQuery, {
+        variables: { postId },
+    })
 
-  const [publish] = useMutation(PublishMutation)
-  const [deletePost] = useMutation(DeleteMutation)
+    const [publish] = useMutation(PublishMutation)
+    const [deletePost] = useMutation(DeleteMutation)
 
-  if (loading) {
-    console.log("loading")
-    return <div>Loading ...</div>
-  }
-  if (error) {
-    console.log("error")
-    return <div>Error: {error.message}</div>
-  }
+    if (loading) {
+        return <div>Loading ...</div>
+    }
+    if (error) {
+        return <div>Error: {error.message}</div>
+    }
 
-  console.log(`response`, data)
+    let title = data.post.title
+    if (!data.post.published) {
+        title = `${title} (Draft)`
+    }
 
-  let title = data.post.title
-  if (!data.post.published) {
-    title = `${title} (Draft)`
-  }
+    const authorName = data.post.author
+        ? data.post.author.name
+        : 'Unknown author'
+    return (
+        <Layout>
+            <div>
+                <h2>{title}</h2>
+                <p>By {authorName}</p>
+                <p>{data.post.content}</p>
+                {!data.post.published && (
+                    <button
+                        onClick={async (e) => {
+                            await publish({
+                                variables: {
+                                    postId,
+                                },
+                                refetchQueries: [
+                                    {
+                                        query: DraftsQuery,
+                                    },
+                                    {
+                                        query: FeedQuery,
+                                    },
+                                ],
+                            })
+                            Router.push('/')
+                        }}
+                    >
+                        Publish
+                    </button>
+                )}
+                <button
+                    onClick={async (e) => {
+                        await deletePost({
+                            variables: {
+                                postId,
+                            },
+                            refetchQueries: [
+                                {
+                                    query: DraftsQuery,
+                                },
+                                {
+                                    query: FeedQuery,
+                                },
+                            ],
+                        })
+                        Router.push('/')
+                    }}
+                >
+                    Delete
+                </button>
+            </div>
+            <style jsx>{`
+                .page {
+                    background: white;
+                    padding: 2rem;
+                }
 
-  const authorName = data.post.author ? data.post.author.name : "Unknown author"
-  return (
-    <Layout>
-      <div>
-        <h2>{title}</h2>
-        <p>By {authorName}</p>
-        <p>{data.post.content}</p>
-        {!data.post.published && (
-          <button
-            onClick={async (e) => {
-              await publish({
-                variables: {
-                  postId,
-                },
-                refetchQueries: [
-                  {
-                    query: DraftsQuery,
-                  },
-                  {
-                    query: FeedQuery,
-                  },
-                ],
-              })
-              Router.push("/")
-            }}
-          >
-            Publish
-          </button>
-        )}
-        <button
-          onClick={async (e) => {
-            await deletePost({
-              variables: {
-                postId,
-              },
-              refetchQueries: [
-                {
-                  query: DraftsQuery,
-                },
-                {
-                  query: FeedQuery,
-                },
-              ],
-            })
-            Router.push("/")
-          }}
-        >
-          Delete
-        </button>
-      </div>
-      <style jsx>{`
-        .page {
-          background: white;
-          padding: 2rem;
-        }
+                .actions {
+                    margin-top: 2rem;
+                }
 
-        .actions {
-          margin-top: 2rem;
-        }
+                button {
+                    background: #ececec;
+                    border: 0;
+                    border-radius: 0.125rem;
+                    padding: 1rem 2rem;
+                }
 
-        button {
-          background: #ececec;
-          border: 0;
-          border-radius: 0.125rem;
-          padding: 1rem 2rem;
-        }
-
-        button + button {
-          margin-left: 1rem;
-        }
-      `}</style>
-    </Layout>
-  )
+                button + button {
+                    margin-left: 1rem;
+                }
+            `}</style>
+        </Layout>
+    )
 }
 
 export default withApollo(Post)

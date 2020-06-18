@@ -65,17 +65,17 @@ Below are a number of operations that you can send to the API.
 
 ```graphql
 query {
-  feed {
-    id
-    title
-    content
-    published
-    author {
-      id
-      name
-      email
+    feed {
+        id
+        title
+        content
+        published
+        author {
+            id
+            name
+            email
+        }
     }
-  }
 }
 ```
 
@@ -85,14 +85,9 @@ query {
 
 ```graphql
 mutation {
-  signupUser(
-    data: {
-      name: "Sarah"
-      email: "sarah@prisma.io"
+    signupUser(data: { name: "Sarah", email: "sarah@prisma.io" }) {
+        id
     }
-  ) {
-    id
-  }
 }
 ```
 
@@ -100,14 +95,14 @@ mutation {
 
 ```graphql
 mutation {
-  createDraft(
-    title: "Join the Prisma Slack"
-    content: "https://slack.prisma.io"
-    authorEmail: "alice@prisma.io"
-  ) {
-    id
-    published
-  }
+    createDraft(
+        title: "Join the Prisma Slack"
+        content: "https://slack.prisma.io"
+        authorEmail: "alice@prisma.io"
+    ) {
+        id
+        published
+    }
 }
 ```
 
@@ -115,10 +110,10 @@ mutation {
 
 ```graphql
 mutation {
-  publish(id: __POST_ID__) {
-    id
-    published
-  }
+    publish(id: __POST_ID__) {
+        id
+        published
+    }
 }
 ```
 
@@ -128,17 +123,17 @@ mutation {
 
 ```graphql
 {
-  filterPosts(searchString: "graphql") {
-    id
-    title
-    content
-    published
-    author {
-      id
-      name
-      email
+    filterPosts(searchString: "graphql") {
+        id
+        title
+        content
+        published
+        author {
+            id
+            name
+            email
+        }
     }
-  }
 }
 ```
 
@@ -146,17 +141,17 @@ mutation {
 
 ```graphql
 {
-  post(where: { id: __POST_ID__ }) {
-    id
-    title
-    content
-    published
-    author {
-      id
-      name
-      email
+    post(where: { id: __POST_ID__ }) {
+        id
+        title
+        content
+        published
+        author {
+            id
+            name
+            email
+        }
     }
-  }
 }
 ```
 
@@ -166,17 +161,15 @@ mutation {
 
 ```graphql
 mutation {
-  deleteOnePost(where: {id: __POST_ID__})
-  {
-    id
-  }
+    deleteOnePost(where: { id: __POST_ID__ }) {
+        id
+    }
 }
 ```
 
 > **Note**: You need to replace the `__POST_ID__`-placeholder with an actual `id` from a `Post` item. You can find one e.g. using the `filterPosts`-query.
 
 </Details>
-
 
 ## Evolving the app
 
@@ -315,44 +308,44 @@ As the Prisma Client API was updated, you can now also invoke "raw" operations v
 
 ```ts
 const profile = await prisma.profile.create({
-  data: {
-    bio: "Hello World",
-    user: {
-      connect: { email: "alice@prisma.io" },
+    data: {
+        bio: 'Hello World',
+        user: {
+            connect: { email: 'alice@prisma.io' },
+        },
     },
-  },
-});
+})
 ```
 
 ##### Create a new user with a new profile
 
 ```ts
 const user = await prisma.user.create({
-  data: {
-    email: "john@prisma.io",
-    name: "John",
-    profile: {
-      create: {
-        bio: "Hello World",
-      },
+    data: {
+        email: 'john@prisma.io',
+        name: 'John',
+        profile: {
+            create: {
+                bio: 'Hello World',
+            },
+        },
     },
-  },
-});
+})
 ```
 
 ##### Update the profile of an existing user
 
 ```ts
 const userWithUpdatedProfile = await prisma.user.update({
-  where: { email: "alice@prisma.io" },
-  data: {
-    profile: {
-      update: {
-        bio: "Hello Friends",
-      },
+    where: { email: 'alice@prisma.io' },
+    data: {
+        profile: {
+            update: {
+                bio: 'Hello Friends',
+            },
+        },
     },
-  },
-});
+})
 ```
 
 ### 5. Build new UI features in React
@@ -363,9 +356,8 @@ In the application code, you can access the new operations via Apollo Client and
 
 ## Next steps
 
-- Read the holistic, step-by-step [Prisma Framework tutorial](https://github.com/prisma/prisma2/blob/master/docs/tutorial.md)
-- Check out the [Prisma Framework docs](https://github.com/prisma/prisma2) (e.g. for [data modeling](https://github.com/prisma/prisma2/blob/master/docs/data-modeling.md), [relations](https://github.com/prisma/prisma2/blob/master/docs/relations.md) or the [Prisma Client API](https://github.com/prisma/prisma2/tree/master/docs/prisma-client-js/api.md))
-- Share your feedback in the [`prisma2-preview`](https://prisma.slack.com/messages/CKQTGR6T0/) channel on the [Prisma Slack](https://slack.prisma.io/)
-- Create issues and ask questions on [GitHub](https://github.com/prisma/prisma2/)
-- Track Prisma 2's progress on [`isprisma2ready.com`](https://isprisma2ready.com)
-
+-   Read the holistic, step-by-step [Prisma Framework tutorial](https://github.com/prisma/prisma2/blob/master/docs/tutorial.md)
+-   Check out the [Prisma Framework docs](https://github.com/prisma/prisma2) (e.g. for [data modeling](https://github.com/prisma/prisma2/blob/master/docs/data-modeling.md), [relations](https://github.com/prisma/prisma2/blob/master/docs/relations.md) or the [Prisma Client API](https://github.com/prisma/prisma2/tree/master/docs/prisma-client-js/api.md))
+-   Share your feedback in the [`prisma2-preview`](https://prisma.slack.com/messages/CKQTGR6T0/) channel on the [Prisma Slack](https://slack.prisma.io/)
+-   Create issues and ask questions on [GitHub](https://github.com/prisma/prisma2/)
+-   Track Prisma 2's progress on [`isprisma2ready.com`](https://isprisma2ready.com)
